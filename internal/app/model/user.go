@@ -8,10 +8,9 @@ import (
 )
 
 type User struct {
-	ID               int
-	Username         string
-	Encrypt_Password string
-	Pub_Key          string
+	ID       int
+	Username string
+	Pub_Key  string
 }
 
 func (user *User) Validate() error {
@@ -28,7 +27,7 @@ func (user *User) BeforeCreate() error {
 			return err
 		}
 
-		user.Encrypt_Password = enc
+		user.Pub_Key = enc
 
 	}
 	return nil
