@@ -1,0 +1,8 @@
+bind_addr = ":8080"
+log_level = "debug"
+
+[store]
+database_url = ""
+database_user = ""
+database_password = ""
+database_name = ""

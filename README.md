@@ -1,1 +1,1 @@
-# passman-api-go
+# basic-server-go pass-manager
