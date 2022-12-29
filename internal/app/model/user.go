@@ -44,3 +44,6 @@ func EncryptString(str string) (string, error) {
 func (u *User) Sanitize() {
 	u.Pub_Key = ""
 }
+func (u *User) CheckPassword(pubkey string) bool {
+	return u.Pub_Key == pubkey
+}
