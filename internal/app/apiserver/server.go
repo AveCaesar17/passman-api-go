@@ -1,9 +1,11 @@
 package apiserver
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/AveCaesar17/basic-server-go.git/internal/app/apiserver/store"
+	"github.com/AveCaesar17/basic-server-go.git/internal/app/model"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
@@ -28,8 +30,39 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 func (s *server) configureRouter() {
-	s.router.HandleFunc("/test", s.handleUserCreate()).Methods("POST")
+	s.router.HandleFunc("/create_user", s.handleUserCreate()).Methods("POST")
 }
 func (s *server) handleUserCreate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	type request struct {
+		Username string `json:"username"`
+		PubKey   string `json:"pubkey"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		u := &model.User{
+			Username: req.Username,
+			Pub_Key:  req.PubKey,
+		}
+
+		if err := s.store.User().Create(u); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+		}
+
+		u.Sanitize()
+		s.response(w, r, http.StatusCreated, u)
+	}
+}
+
+func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
+	s.response(w, r, code, map[string]string{"error": err.Error()})
+}
+func (s *server) response(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+	w.WriteHeader(code)
+	if data != nil {
+		json.NewEncoder(w).Encode(data)
+	}
 }

@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/AveCaesar17/basic-server-go.git/internal/app/apiserver/store"
 	"github.com/AveCaesar17/basic-server-go.git/internal/app/model"
@@ -15,9 +16,10 @@ func (r *UserRepository) Create(user *model.User) error {
 	if err := user.Validate(); err != nil {
 		return err
 	}
-
+	fmt.Println(user.Username, user.Pub_Key)
 	return r.store.db.QueryRow(
-		"INSERT INTO users (username,pub_key) VALUES ($1,$2) RETURNING id",
+
+		"INSERT INTO users (username, pub_key) VALUES ($1,$2) RETURNING id",
 		user.Username, user.Pub_Key,
 	).Scan(&user.ID)
 }

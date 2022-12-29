@@ -8,9 +8,9 @@ import (
 )
 
 type User struct {
-	ID       int
-	Username string
-	Pub_Key  string
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Pub_Key  string `json:"pubkey,omitempty"`
 }
 
 func (user *User) Validate() error {
@@ -39,4 +39,8 @@ func EncryptString(str string) (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func (u *User) Sanitize() {
+	u.Pub_Key = ""
 }
